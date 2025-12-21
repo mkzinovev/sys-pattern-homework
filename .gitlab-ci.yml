@@ -1,12 +1,24 @@
 stages:
+  - lint
   - test
   - build
+
+variables:
+  FF_USE_FASTZIP: "true"
+
+lint:
+  stage: lint
+  image: alpine:latest
+  script:
+    - echo "Lint stage"
+    - test -f .gitlab-ci.yml
+    - echo "OK: .gitlab-ci.yml exists"
 
 test:
   stage: test
   image: alpine:latest
   script:
-    - echo "CI works"
+    - echo "Test stage"
     - uname -a
     - echo "Tests passed"
 
@@ -14,9 +26,10 @@ build:
   stage: build
   image: alpine:latest
   script:
-    - echo "Build stage: packing repository"
+    - echo "Build stage: pack repository"
     - tar -czf artifact.tar.gz .
   artifacts:
+    name: "artifact-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
     paths:
       - artifact.tar.gz
     expire_in: 1 week
